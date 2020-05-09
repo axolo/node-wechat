@@ -69,7 +69,7 @@ event decrypted of callback. response `echostr` if callback success.
 const WechatSdk = require('@axolo/node-wechat');
 
 const config = {
-  appKey: 'APP_KEY',
+  appId: 'APP_ID',
   appSecret: 'APP_SECRET',
 };
 const wechat = new WechatSdk(config);
@@ -96,7 +96,7 @@ yarn test ./test/callback-koa.test.js # test callback
 ### .env
 
 ```ini
-appId = APP_KEY
+appId = APP_ID
 appSecret = APP_SECRET
 ```
 
