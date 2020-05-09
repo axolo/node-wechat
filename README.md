@@ -10,6 +10,8 @@ yarn add @axolo/node-wechat
 
 ## API
 
+please see `src` and `test` for more api usage.
+
 ### constructor(config)
 
 > params

@@ -1,6 +1,6 @@
 {
   "name": "@axolo/node-wechat",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Wechat OpenAPI Node.js SDK.",
   "main": "src/index.js",
   "scripts": {

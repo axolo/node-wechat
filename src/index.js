@@ -14,6 +14,7 @@ const WechatSdkCache = require('./cache');
  * mode | prefix | type        | suffix
  * -----|--------|-------------|----------
  * all  | wechat | accessToken | appId
+ * all  | wechat | jsapiTicket | appId
  *
  * @class WechatSdk
  */
@@ -24,6 +25,7 @@ class WechatSdk {
       baseUrl: 'https://api.weixin.qq.com/cgi-bin',
       authTokenUrl: 'https://api.weixin.qq.com/cgi-bin/token',
       jsapiTicketUrl: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket',
+      code2SessionUrl: 'https://api.weixin.qq.com/sns/jscode2session',
       cache: { store: 'memory', prefix: 'wechat' },
       error: { name: 'WechatSdkError' },
     };
@@ -32,6 +34,23 @@ class WechatSdk {
     this.cache = new WechatSdkCache(this.config.cache);
     this.logger = new WechatSdkLogger(this.config.logger);
     this.error = WechatSdkError;
+  }
+
+  /**
+   * **获取当前用户会话**
+   *
+   * @see https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
+   * @param {object} { jsCode, grantType } 请求参数
+   * @return {object} 当前用户会话，如：openid（用户唯一标志）、unionid（用户在开放平台的唯一标识符）
+   * @memberof WechatSdk
+   */
+  async code2Session({ jsCode, grantType = 'authorization_code' }) {
+    const { code2SessionUrl: url, appId, appSecret } = this.config;
+    const params = { appid: appId, secret: appSecret, js_code: jsCode, grant_type: grantType };
+    const { data: session } = await this.axios({ url, params });
+    if (!session) throw new WechatSdkError('get user session failed');
+    if (session.errcode) throw new WechatSdkError(JSON.stringify(session));
+    return session;
   }
 
   /**
