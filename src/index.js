@@ -23,6 +23,7 @@ class WechatSdk {
       axios,
       baseUrl: 'https://api.weixin.qq.com/cgi-bin',
       authTokenUrl: 'https://api.weixin.qq.com/cgi-bin/token',
+      jsapiTicketUrl: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket',
       cache: { store: 'memory', prefix: 'wechat' },
       error: { name: 'WechatSdkError' },
     };
@@ -30,6 +31,7 @@ class WechatSdk {
     this.axios = this.config.axios;
     this.cache = new WechatSdkCache(this.config.cache);
     this.logger = new WechatSdkLogger(this.config.logger);
+    this.error = WechatSdkError;
   }
 
   /**
@@ -78,6 +80,30 @@ class WechatSdk {
         return token;
       }
     }
+  }
+
+  /**
+   * **获取JSAPI票据**
+   *
+   * @see https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/JS-SDK.html#62
+   * @param {object} { type = 'jsapi' } 票据类型
+   * @return {string} JSAPI票据
+   * @memberof WeixinSdk
+   */
+  async getJsapiTicket({ type = 'jsapi' } = {}) {
+    const { config } = this;
+    const { appId, jsapiTicketUrl: url, cache } = config;
+    const cacheKey = [ cache.prefix, 'jsapiTicket', appId ].join('.');
+    const cacheValue = await this.cache.get(cacheKey);
+    if (cacheValue) return cacheValue;
+    const access_token = await this.getToken({ ...config });
+    const params = { access_token, type };
+    const { data: result } = await this.axios({ url, params });
+    if (!result) throw new this.error('get jsapi ticket failed');
+    if (result.errcode) throw new this.error(JSON.stringify(result));
+    const { ticket, expires_in } = result;
+    await this.cache.set(cacheKey, ticket, { ttl: expires_in });
+    return ticket;
   }
 
   /**
