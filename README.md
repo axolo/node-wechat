@@ -67,21 +67,16 @@ event decrypted of callback. response `echostr` if callback success.
 
 ```js
 const WechatSdk = require('@axolo/node-wechat');
-
-const config = {
-  appId: 'APP_ID',
-  appSecret: 'APP_SECRET',
-};
+const config = { appId: 'APP_ID', appSecret: 'APP_SECRET' };
 const wechat = new WechatSdk(config);
 
-const request = {
-  url: '/user/info',
-  params: { openid: 'openid' },
-};
-wechat
-  .execute(request)
-  .catch(err => console.log(err))
-  .then(res => console.log(res));
+wechat.execute('/user/info', {
+  params: { openid: 'openid' }
+}).catch(err => {
+  console.log(err);
+}).then(res => {
+  console.log(res);
+});
 ```
 
 ## Test
