@@ -8,6 +8,6 @@ const wechat = new WechatSdk(config);
 
 const jsCode = '011DgmJk07kanp1PVHMk0RhFJk0DgmJd';
 
-wechat.code2Session({ jsCode }).then(res => {
+wechat.code2session({ jsCode }).then(res => {
   console.log(res);
 });

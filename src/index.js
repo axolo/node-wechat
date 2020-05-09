@@ -44,7 +44,7 @@ class WechatSdk {
    * @return {object} 当前用户会话，如：openid（用户唯一标志）、unionid（用户在开放平台的唯一标识符）
    * @memberof WechatSdk
    */
-  async code2Session({ jsCode, grantType = 'authorization_code' }) {
+  async code2session({ jsCode, grantType = 'authorization_code' }) {
     const { code2SessionUrl: url, appId, appSecret } = this.config;
     const params = { appid: appId, secret: appSecret, js_code: jsCode, grant_type: grantType };
     const { data: session } = await this.axios({ url, params });
