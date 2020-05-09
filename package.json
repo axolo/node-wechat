@@ -1,0 +1,52 @@
+{
+  "name": "@axolo/node-wechat",
+  "version": "0.0.1",
+  "description": "Wechat OpenAPI Node.js SDK.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test node -r dotenv-flow/config"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cache-manager": "^3.2.1",
+    "deepmerge": "^4.2.2",
+    "log4js": "^6.2.1"
+  },
+  "devDependencies": {
+    "body-parser": "^1.19.0",
+    "cross-env": "^7.0.2",
+    "dotenv-flow": "^3.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-egg": "^8.0.1",
+    "express": "^4.17.1",
+    "koa": "^2.11.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^8.0.8",
+    "mysql2": "^2.1.0",
+    "node-cron": "^2.0.3",
+    "nodemon": "^2.0.3"
+  },
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axolo/node-wechat.git"
+  },
+  "keywords": [
+    "node-wechat",
+    "node-weixin",
+    "wexin",
+    "wechat",
+    "weixin sdk",
+    "wechat api",
+    "wechat miniprogram",
+    "wechat mp"
+  ],
+  "author": "Yueming Fang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/axolo/node-wechat/issues"
+  },
+  "homepage": "https://github.com/axolo/node-wechat#readme"
+}
