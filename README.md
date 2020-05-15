@@ -18,6 +18,11 @@ please see `src` and `test` for more api usage.
 
 |    config    |                     description                     |
 | ------------ | --------------------------------------------------- |
+| appMode      | mp = MiniProgram, oa = OfficialAccount              |
+| appId        | Wechat appId                                        |
+| appSecret    | Wechat AppSecret                                    |
+| eventToken   | [http event callback] token                         |
+| eventAesKey  | [http event callback] encode aes key                |
 | baseUrl      | base url of [Wechat OpenAPI]                        |
 | authTokenUrl | url of get wechat access token                      |
 | error        | throw error settings                                |
@@ -93,6 +98,7 @@ yarn test ./test/callback-koa.test.js # test callback
 ### .env
 
 ```ini
+appMode = mp
 appId = APP_ID
 appSecret = APP_SECRET
 ```

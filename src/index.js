@@ -25,7 +25,8 @@ class WechatSdk {
       baseUrl: 'https://api.weixin.qq.com/cgi-bin',
       authTokenUrl: 'https://api.weixin.qq.com/cgi-bin/token',
       jsapiTicketUrl: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket',
-      code2SessionUrl: 'https://api.weixin.qq.com/sns/jscode2session',
+      code2sessionUrl: 'https://api.weixin.qq.com/sns/jscode2session',
+      code2tokenUrl: 'https://api.weixin.qq.com/sns/oauth2/access_token',
       cache: { store: 'memory', prefix: 'wechat' },
       error: { name: 'WechatSdkError' },
     };
@@ -37,7 +38,9 @@ class WechatSdk {
   }
 
   /**
-   * **获取当前用户会话**
+   * **获取当前用户会话信息**
+   *
+   * 小程序
    *
    * @see https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/auth.code2Session.html
    * @param {object} { jsCode, grantType } 请求参数
@@ -45,12 +48,31 @@ class WechatSdk {
    * @memberof WechatSdk
    */
   async code2session({ jsCode, grantType = 'authorization_code' }) {
-    const { code2SessionUrl: url, appId, appSecret } = this.config;
+    const { code2sessionUrl: url, appId, appSecret } = this.config;
     const params = { appid: appId, secret: appSecret, js_code: jsCode, grant_type: grantType };
     const { data: session } = await this.axios({ url, params });
     if (!session) throw new WechatSdkError('get user session failed');
     if (session.errcode) throw new WechatSdkError(JSON.stringify(session));
     return session;
+  }
+
+  /**
+   * **获取当前用户授权信息**
+   *
+   * 公众号
+   *
+   * @see https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Wechat_webpage_authorization.html#1
+   * @param {object} { code, grantType } 请求参数
+   * @return {object} 当前用户会话，如：openid（用户唯一标志）、unionid（用户在开放平台的唯一标识符）
+   * @memberof WechatSdk
+   */
+  async code2token({ code, grantType = 'authorization_code' }) {
+    const { code2tokenUrl: url, appId, appSecret } = this.config;
+    const params = { appid: appId, secret: appSecret, code, grant_type: grantType };
+    const { data: token } = await this.axios({ url, params });
+    if (!token) throw new WechatSdkError('get user token failed');
+    if (token.errcode) throw new WechatSdkError(JSON.stringify(token));
+    return token;
   }
 
   /**
@@ -61,7 +83,7 @@ class WechatSdk {
    * @return {string} access_token，微信应用令牌
    * @memberof WechatSdk
    */
-  async getTokenH5({ appId, appSecret, grantType = 'client_credential' }) {
+  async getTokenOa({ appId, appSecret, grantType = 'client_credential' }) {
     const { cache, authTokenUrl: url } = this.config;
     const cacheKey = [ cache.prefix, 'accessToken', appId ].join('.');
     const cacheValue = await this.cache.get(cacheKey);
@@ -93,9 +115,10 @@ class WechatSdk {
     const { appMode } = options;
     switch (appMode) {
       default:
-      case 'h5': {
+      case 'mp':
+      case 'oa': {
         const { appId, appSecret } = options;
-        const token = await this.getTokenH5({ appId, appSecret });
+        const token = await this.getTokenOa({ appId, appSecret });
         return token;
       }
     }
@@ -137,7 +160,7 @@ class WechatSdk {
   async execute(api, request = {}, scope = {}) {
     const { config } = this;
     const { baseUrl } = config;
-    const access_token = await this.getTokenH5({ ...config, ...scope });
+    const access_token = await this.getTokenOa({ ...config, ...scope });
     const options = deepmerge(request, { params: { access_token } });
     const url = baseUrl + api;
     const { data } = await this.axios(url, options);
