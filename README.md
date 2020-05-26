@@ -86,6 +86,46 @@ wechat.execute('/user/info', {
 });
 ```
 
+## How to config jsapi
+
+1. Get jsapiTicket (back-end)
+
+```js
+const WechatSdk = require('@axolo/node-wechat');
+const config = { appId: 'APP_ID', appSecret: 'APP_SECRET' };
+const wechat = new WechatSdk(config);
+wechat.getJsapiTicket().catch(err => {
+  console.log(err);
+}).then(jsapiTicket => {
+  // output jsapiTicket to front-end
+  console.log(jsapiTicket);
+});
+```
+
+2. Config jsapi (front-end)
+
+```js
+import crypto from 'crypto'
+import querystring from 'query-string'
+import shortid from 'shortid'
+
+const wechatJsapiSign = ({ appId, jsapiTicket, jsApiList, debug = false }) => {
+  const nonceStr = shortid.generate()
+  const timestamp = parseInt(Date.now() / 1000)
+  const { href } = location
+  const url = href.substring(0, href.indexOf('#')) // spa hash mode
+  const params = { jsapi_ticket: jsapiTicket, noncestr: nonceStr, timestamp, url }
+  const plain = querystring.stringify(params, { encode: false })
+  const signature = crypto.createHash('sha1').update(plain, 'utf8').digest('hex')
+  const config = { appId, timestamp, nonceStr, signature, jsApiList, debug }
+  return config
+}
+
+// get and cache jsapiTicket from step 1
+const config = wechatJsapiSign({ appId: 'APP_ID', jsapiTicket, jsApiList: [] })
+wx.config(config)
+```
+
 ## Test
 
 ```bash
@@ -112,7 +152,7 @@ httpPort = 7001
 
 ## TODO
 
-- mode: support `miniprogram`, `work wechat`, etc.
+- mode: support `work wechat`.
 - test: Assertion Testing with Mocha or Jest.
 - cache: support `memory`, `redis`, `mysql`, etc.
 
